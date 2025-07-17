@@ -10,7 +10,8 @@
   <style>
     html, body {height:100%;}
     body {font-family: system-ui, sans-serif; margin: 0; background:#f7f7f7; color:#333; display:flex; flex-direction:column; min-height:100vh;}
-    header {background:#005eb8; color:#fff; padding:1rem; text-align:center;}
+    header {background:#005eb8; color:#fff; padding:0.6rem 1rem; text-align:center;}
+    header h1 {margin:0; font-size:1.3rem;}
     header {position:sticky; top:0; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.2);}
     main {flex:1; padding:1rem; overflow-y:auto; -webkit-overflow-scrolling:touch;}
     h2 {margin-top:1.5rem;}
@@ -33,6 +34,8 @@
       -webkit-appearance:none;
       box-shadow:0 2px 4px rgba(0,0,0,0.05) inset;
     }
+    /* Ensure datetime-local input fits small screens */
+    input[type="datetime-local"] {min-width:0; width:100%;}
     button {padding:0.9rem; font-size:1.1rem; border:none; border-radius:8px; background:#005eb8; color:#fff; cursor:pointer; width:100%;}
     button:active {transform:scale(0.98);}    
     table {width:100%; border-collapse:collapse; margin-top:1rem;}
@@ -41,7 +44,7 @@
     .instructions {background:#fff; padding:1rem; margin-top:1rem; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.1);}    
     .hidden {display:none;}
     .navbar {display:flex; width:100%;}
-    .navbar button {flex:1; padding:0.8rem; font-size:1rem; border:none; background:#ddd; cursor:pointer;}
+    .navbar button {flex:1; padding:0.5rem 0.4rem; font-size:0.9rem; border:none; background:#ddd; cursor:pointer;}
     .navbar button.active {background:#005eb8; color:#fff;}
     .footer {text-align:center; padding:0.5rem; font-size:0.8rem; color:#666; background:#f0f0f0;}
   </style>
@@ -54,18 +57,6 @@
   <section id="entryPage">
   <h2>Neuen Eintrag erfassen</h2>
   <form id="entryForm">
-    <label>Pilot/Techniker
-      <input type="text" id="who" required>
-    </label>
-    <label>Datum &amp; Uhrzeit
-      <input type="datetime-local" id="when" required>
-    </label>
-    <label>Ölmenge (Liter)
-      <input type="number" id="amount" step="0.1" min="0" required>
-    </label>
-    <label>Flugstunden (h)
-      <input type="number" id="hours" step="0.1" min="0" required>
-    </label>
     <label>Flugzeug
       <select id="aircraft" required>
         <option value="" disabled selected hidden>Bitte wählen</option>
@@ -79,6 +70,18 @@
           <option>D-EBPN</option>
         </optgroup>
       </select>
+    </label>
+    <label>Pilot/Techniker
+      <input type="text" id="who" required>
+    </label>
+    <label>Datum &amp; Uhrzeit
+      <input type="datetime-local" id="when" required>
+    </label>
+    <label>Ölmenge (Liter)
+      <input type="number" id="amount" step="0.1" min="0" required>
+    </label>
+    <label>Flugstunden (h)
+      <input type="number" id="hours" step="0.1" min="0" required>
     </label>
     <button type="submit">Eintrag hinzufügen</button>
   </form>
@@ -157,6 +160,8 @@
   const form = document.getElementById('entryForm');
   const tableBody = document.querySelector('#entriesTable tbody');
   const aircraftSelect = document.getElementById('aircraft');
+  const amountInput = document.getElementById('amount');
+  const hoursInput = document.getElementById('hours');
   const da40Info = document.getElementById('da40Info');
   const entryPage = document.getElementById('entryPage');
   const statsPage = document.getElementById('statsPage');
@@ -206,10 +211,32 @@
 
   function updateAircraftInfo() {
     const da40Regs = ['D-EPBX','D-EBPZ','D-EBLK'];
-    if (da40Regs.includes(aircraftSelect.value)) {
+    const tecnamRegs = ['D-EBPF','D-EBPN'];
+    const selected = aircraftSelect.value;
+
+    // Show/hide DA40 info
+    if (da40Regs.includes(selected)) {
       da40Info.classList.remove('hidden');
     } else {
       da40Info.classList.add('hidden');
+    }
+
+    // Prefill amount based on type
+    if (da40Regs.includes(selected)) {
+      amountInput.value = 0.5;
+    } else if (tecnamRegs.includes(selected)) {
+      amountInput.value = 0.1;
+    } else {
+      amountInput.value = '';
+    }
+
+    // Prefill hours with last recorded value for this aircraft
+    const records = entries.filter(e => e.aircraft === selected);
+    if (records.length) {
+      const lastHours = Math.max(...records.map(r => r.hours));
+      hoursInput.value = lastHours.toFixed(1);
+    } else {
+      hoursInput.value = '';
     }
   }
 
