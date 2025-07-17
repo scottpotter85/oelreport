@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#005eb8" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <title>BPFV Mannheim Öl Report</title>
+  <style>
+    html, body {height:100%;}
+    body {font-family: system-ui, sans-serif; margin: 0; background:#f7f7f7; color:#333; display:flex; flex-direction:column; min-height:100vh;}
+    header {background:#005eb8; color:#fff; padding:1rem; text-align:center;}
+    header {position:sticky; top:0; z-index:10; box-shadow:0 2px 4px rgba(0,0,0,0.2);}
+    main {flex:1; padding:1rem; overflow-y:auto; -webkit-overflow-scrolling:touch;}
+    h2 {margin-top:1.5rem;}
+    form {display:flex; flex-direction:column; gap:1rem; background:#fff; padding:1rem; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.1);}    
+    label {display:flex; flex-direction:column; font-weight:600; font-size:0.9rem;}
+    input, select {padding:0.8rem; font-size:1rem; border:1px solid #ccc; border-radius:8px; width:100%; box-sizing:border-box;}
+    /* Modernized select */
+    select {
+      padding:0.8rem 2.5rem 0.8rem 0.8rem; /* extra right padding for arrow */
+      font-size:1.05rem;
+      border-radius:12px;
+      background-color:#fff;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #005eb8 50%),
+        linear-gradient(135deg, #005eb8 50%, transparent 50%);
+      background-position:right 1.2rem center, right 0.8rem center;
+      background-size:0.6rem 0.6rem, 0.6rem 0.6rem;
+      background-repeat:no-repeat;
+      appearance:none;
+      -webkit-appearance:none;
+      box-shadow:0 2px 4px rgba(0,0,0,0.05) inset;
+    }
+    button {padding:0.9rem; font-size:1.1rem; border:none; border-radius:8px; background:#005eb8; color:#fff; cursor:pointer; width:100%;}
+    button:active {transform:scale(0.98);}    
+    table {width:100%; border-collapse:collapse; margin-top:1rem;}
+    th, td {padding:0.5rem; border-bottom:1px solid #ddd; font-size:0.85rem;}
+    th {background:#ececec; text-align:left;}
+    .instructions {background:#fff; padding:1rem; margin-top:1rem; border-radius:12px; box-shadow:0 4px 6px rgba(0,0,0,0.1);}    
+    .hidden {display:none;}
+    .navbar {display:flex; width:100%;}
+    .navbar button {flex:1; padding:0.8rem; font-size:1rem; border:none; background:#ddd; cursor:pointer;}
+    .navbar button.active {background:#005eb8; color:#fff;}
+    .footer {text-align:center; padding:0.5rem; font-size:0.8rem; color:#666; background:#f0f0f0;}
+  </style>
+</head>
+<body>
+<header>
+  <h1>Öl Report – BPFV Mannheim</h1>
+</header>
+<main>
+  <section id="entryPage">
+  <h2>Neuen Eintrag erfassen</h2>
+  <form id="entryForm">
+    <label>Pilot/Techniker
+      <input type="text" id="who" required>
+    </label>
+    <label>Datum &amp; Uhrzeit
+      <input type="datetime-local" id="when" required>
+    </label>
+    <label>Ölmenge (Liter)
+      <input type="number" id="amount" step="0.1" min="0" required>
+    </label>
+    <label>Flugstunden (h)
+      <input type="number" id="hours" step="0.1" min="0" required>
+    </label>
+    <label>Flugzeug
+      <select id="aircraft" required>
+        <option value="" disabled selected hidden>Bitte wählen</option>
+        <optgroup label="Diamond DA40">
+          <option>D-EPBX</option>
+          <option>D-EBPZ</option>
+          <option>D-EBLK</option>
+        </optgroup>
+        <optgroup label="Tecnam P2008 JC">
+          <option>D-EBPF</option>
+          <option>D-EBPN</option>
+        </optgroup>
+      </select>
+    </label>
+    <button type="submit">Eintrag hinzufügen</button>
+  </form>
+
+  <section id="entriesSection">
+    <h2>Einträge</h2>
+    <table id="entriesTable">
+      <thead>
+        <tr>
+            <th>Wer</th>
+            <th>Datum</th>
+            <th>Ölmenge (L)</th>
+            <th>Stunden</th>
+            <th>Flugzeug</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="instructions">
+    <h2>Anleitung zum Nachfüllen</h2>
+    <ol>
+      <li>Stellen Sie das Flugzeug auf eine ebene Fläche und sichern Sie es gegen Wegrollen.</li>
+      <li>Ölstand mit dem Ölmessstab prüfen. Nachfüllen, wenn der Stand unterhalb der empfohlenen Marke liegt.</li>
+      <li>Verwenden Sie ausschließlich das freigegebene Motoröl. <strong>Diesen Monat: AeroShell W100 Plus</strong>.</li>
+      <li>Reinigen Sie die Ölflasche und den Einfüllstutzen vor dem Nachfüllen, um Verunreinigungen zu vermeiden.</li>
+      <li>Füllen Sie langsam nach, um Überlauf zu vermeiden. Kontrollieren Sie den Stand erneut.</li>
+      <li>Entsorgen Sie leere Ölflaschen gemäß den Umweltvorschriften.</li>
+    </ol>
+  </section>
+
+  <section id="da40Info" class="instructions hidden">
+    <h2>DA40 Ölkontrolle</h2>
+    <img src="da40_oelkontrolle.png" alt="DA40 Ölkontrolle" style="width:100%;max-width:400px;display:block;margin:auto;" />
+    <p style="margin-top:1rem;"><strong>Gesamtfüllmenge:</strong> 1,5 Liter (Min – Max)</p>
+    <p><strong>Normale Nachfüllmenge:</strong> 0,5 Liter (ca. eine halbe Flasche)</p>
+    <p><strong>Bei Reisen beachten:</strong> Ölverbrauch ca. 0,05 L/Stunde – rechtzeitig vorher nachfüllen!</p>
+  </section>
+  </section> <!-- end entryPage -->
+
+  <!-- Statistikseite -->
+  <section id="statsPage" class="hidden">
+    <h2>Statistik</h2>
+    <label>Flugzeug
+      <select id="statsAircraft" style="margin-top:0.5rem;">
+        <option value="ALL">Alle</option>
+        <option>D-EPBX</option>
+        <option>D-EBPZ</option>
+        <option>D-EBLK</option>
+        <option>D-EBPF</option>
+        <option>D-EBPN</option>
+      </select>
+    </label>
+    <div id="statsSummary" style="margin-top:1rem;"></div>
+    <table id="statsTable" style="margin-top:1rem;">
+      <thead>
+        <tr>
+          <th>Wer</th><th>Datum</th><th>Ölmenge (L)</th><th>Stunden</th><th>Flugzeug</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</main>
+<footer>
+  <div class="navbar">
+    <button id="navEntry" class="active">Eintragen</button>
+    <button id="navStats">Statistik</button>
+  </div>
+  <div class="footer">© BPFV Mannheim – Öl Report</div>
+</footer>
+
+<script>
+  // --- DOM References ---
+  const form = document.getElementById('entryForm');
+  const tableBody = document.querySelector('#entriesTable tbody');
+  const aircraftSelect = document.getElementById('aircraft');
+  const da40Info = document.getElementById('da40Info');
+  const entryPage = document.getElementById('entryPage');
+  const statsPage = document.getElementById('statsPage');
+  const navEntry = document.getElementById('navEntry');
+  const navStats = document.getElementById('navStats');
+  const statsAircraft = document.getElementById('statsAircraft');
+  const statsSummary = document.getElementById('statsSummary');
+  const statsTableBody = document.querySelector('#statsTable tbody');
+
+  // Load existing entries from localStorage
+  let entries = JSON.parse(localStorage.getItem('oilEntries') || '[]');
+  renderEntries();
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const entry = {
+      who: document.getElementById('who').value.trim(),
+      when: document.getElementById('when').value,
+      amount: parseFloat(document.getElementById('amount').value),
+      hours: parseFloat(document.getElementById('hours').value),
+      aircraft: document.getElementById('aircraft').value.trim().toUpperCase()
+    };
+    entries.push(entry);
+    localStorage.setItem('oilEntries', JSON.stringify(entries));
+    renderEntries();
+    form.reset();
+  });
+
+  function renderEntries() {
+    tableBody.innerHTML = '';
+    entries.forEach(e => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${e.who}</td>
+        <td>${new Date(e.when).toLocaleString('de-DE')}</td>
+        <td>${e.amount.toFixed(1)}</td>
+        <td>${e.hours.toFixed(1)}</td>
+        <td>${e.aircraft}</td>
+      `;
+      tableBody.appendChild(tr);
+    });
+  }
+
+  // Show DA40 info if selected
+  aircraftSelect.addEventListener('change', updateAircraftInfo);
+  updateAircraftInfo();
+
+  function updateAircraftInfo() {
+    const da40Regs = ['D-EPBX','D-EBPZ','D-EBLK'];
+    if (da40Regs.includes(aircraftSelect.value)) {
+      da40Info.classList.remove('hidden');
+    } else {
+      da40Info.classList.add('hidden');
+    }
+  }
+
+  // Navigation handlers
+  navEntry.addEventListener('click', () => switchPage('entry'));
+  navStats.addEventListener('click', () => switchPage('stats'));
+
+  function switchPage(page) {
+    if (page === 'entry') {
+      entryPage.classList.remove('hidden');
+      statsPage.classList.add('hidden');
+      navEntry.classList.add('active');
+      navStats.classList.remove('active');
+    } else {
+      entryPage.classList.add('hidden');
+      statsPage.classList.remove('hidden');
+      navEntry.classList.remove('active');
+      navStats.classList.add('active');
+      updateStats();
+    }
+  }
+
+  statsAircraft.addEventListener('change', updateStats);
+
+  function updateStats() {
+    const selected = statsAircraft.value;
+    statsTableBody.innerHTML = '';
+    statsSummary.innerHTML = '';
+
+    // Calculate per-aircraft aggregates
+    const aggregates = {};
+    entries.forEach(e => {
+      if (!aggregates[e.aircraft]) {
+        aggregates[e.aircraft] = { totalOil: 0, minH: e.hours, maxH: e.hours };
+      }
+      const a = aggregates[e.aircraft];
+      a.totalOil += e.amount;
+      a.minH = Math.min(a.minH, e.hours);
+      a.maxH = Math.max(a.maxH, e.hours);
+    });
+
+    if (selected === 'ALL') {
+      // Show summary list
+      let html = '<table style="width:100%; border-collapse:collapse;">';
+      html += '<thead><tr><th>Flugzeug</th><th>Öl gesamt (L)</th><th>Geflogene Std.</th><th>L/Std.</th></tr></thead><tbody>';
+      Object.keys(aggregates).forEach(ac => {
+        const agg = aggregates[ac];
+        const hours = agg.maxH - agg.minH || 1;
+        html += `<tr><td>${ac}</td><td>${agg.totalOil.toFixed(1)}</td><td>${hours.toFixed(1)}</td><td>${(agg.totalOil / hours).toFixed(2)}</td></tr>`;
+      });
+      html += '</tbody></table>';
+      statsSummary.innerHTML = html;
+    } else {
+      // Filter entries for aircraft
+      const filtered = entries.filter(e => e.aircraft === selected);
+      // Summary
+      if (aggregates[selected]) {
+        const agg = aggregates[selected];
+        const hours = agg.maxH - agg.minH || 1;
+        statsSummary.innerHTML = `<p><strong>${selected}</strong> – Gesamt Öl: ${agg.totalOil.toFixed(1)} L, Stunden: ${hours.toFixed(1)}, Ø Verbrauch: ${(agg.totalOil / hours).toFixed(2)} L/Std.</p>`;
+      }
+      // Table rows
+      filtered.forEach(e => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${e.who}</td>
+          <td>${new Date(e.when).toLocaleString('de-DE')}</td>
+          <td>${e.amount.toFixed(1)}</td>
+          <td>${e.hours.toFixed(1)}</td>
+          <td>${e.aircraft}</td>
+        `;
+        statsTableBody.appendChild(tr);
+      });
+    }
+  }
+</script>
+</body>
+</html> 
